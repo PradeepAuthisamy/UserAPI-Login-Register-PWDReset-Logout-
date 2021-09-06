@@ -1,4 +1,4 @@
-This API allows you to perform teh below activities :
+This API allows you to perform the below activities :
 Register
 Login
 Password Reset
