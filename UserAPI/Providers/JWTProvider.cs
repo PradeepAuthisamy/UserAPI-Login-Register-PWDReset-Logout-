@@ -22,7 +22,7 @@ namespace UserAPI.Providers
             string json = JsonConvert.SerializeObject(cred);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var tokenResponse = await authClient.PostAsync("http://jwt-authenticator:20/api/authenticator/authenticate", data);
+            var tokenResponse = await authClient.PostAsync("http://jwt-authenticator:200/api/authenticator/authenticate", data);
 
             if (tokenResponse.IsSuccessStatusCode)
             {
