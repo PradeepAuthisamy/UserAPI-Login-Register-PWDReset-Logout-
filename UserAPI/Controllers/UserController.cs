@@ -33,7 +33,7 @@ namespace UserAPI.Controllers
 
             var registerModel = new
             {
-                Message = registerResult.Succeeded ? "Registration has been successfully completed" : "Registration Failed!!!",
+                Message = registerResult.Succeeded ? "Registration Has Been Successfully Completed" : "Registration Failed!!!",
                 IsRegistrationSuccessful = registerResult.Succeeded
             };
 
@@ -43,20 +43,43 @@ namespace UserAPI.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] Login login)
         {
+            var jwToken = string.Empty;
             var loginResult = await _signInManager.PasswordSignInAsync(login.UserName,
                                                                        login.Password,
                                                                        login.RememberMe,
                                                                        false);
-            var jwtTokenResult = await _jwtprovider.GetTokenAsync(login.UserName);
+            var loginSucceeded = loginResult.Succeeded;
+
+            if (loginSucceeded)
+            {
+                jwToken = await _jwtprovider.GetTokenAsync(login.UserName);
+            }
 
             var loginModel = new
             {
-                Message = loginResult.Succeeded ? "Login is Successful" : "Login Failed!!!",
-                Token = jwtTokenResult,
+                Message = loginResult.Succeeded ? "Login Is Successful" : "Login Failed!!!",
+                Token = jwToken,
                 IsLoginSuccessful = loginResult.Succeeded
             };
 
             return Ok(loginModel);
+        }
+
+        [HttpPost("PasswordReset")]
+        public async Task<IActionResult> PasswordReset([FromBody] PasswordReset passwordReset)
+        {
+            var findbyNameResult = await _usermanager.FindByNameAsync(passwordReset.UserName);
+            var passwordResetToken = await _usermanager.GeneratePasswordResetTokenAsync(findbyNameResult);
+            var passwordResetResult = await _usermanager.ResetPasswordAsync(findbyNameResult,
+                                                        passwordResetToken, passwordReset.NewPassword);
+
+            var passwordResetModel = new
+            {
+                Message = passwordResetResult.Succeeded ? "Password Reset Is Successful" : "Password Reset Failed!!!",
+                IsPasswordResetSuccessful = passwordResetResult.Succeeded
+            };
+
+            return Ok(passwordResetModel);
         }
 
         [HttpPost("LogOut")]
@@ -66,6 +89,7 @@ namespace UserAPI.Controllers
 
             var logOutModel = new
             {
+                Message = "Logged Out Successfully",
                 IsLoggedOutSuccessfully = true
             };
 

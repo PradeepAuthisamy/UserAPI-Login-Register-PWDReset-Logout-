@@ -42,7 +42,8 @@ namespace UserAPI
             services.AddControllers();
             services.AddScoped<IJWTProvider, JWTProvider>();
             services.AddIdentity<IdentityUser, IdentityRole>().
-                AddEntityFrameworkStores<UserDBContext>();
+                AddEntityFrameworkStores<UserDBContext>()
+                .AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
