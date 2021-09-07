@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,12 @@ namespace UserAPI.Providers
 {
     public class JWTProvider : IJWTProvider
     {
+        private readonly IConfiguration _config;
+
+        public JWTProvider(IConfiguration config)
+        {
+            _config = config;
+        }
         public async Task<string> GetTokenAsync(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return null;
@@ -22,7 +29,7 @@ namespace UserAPI.Providers
             string json = JsonConvert.SerializeObject(cred);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var tokenResponse = await authClient.PostAsync("http://jwt-authenticator:200/api/authenticator/authenticate", data);
+            var tokenResponse = await authClient.PostAsync(_config.GetValue<string>("ApplicationServices:JWT"), data);
 
             if (tokenResponse.IsSuccessStatusCode)
             {
